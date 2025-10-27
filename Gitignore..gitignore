@@ -1,0 +1,22 @@
+# Ігнорувати віртуальне середовище
+.env/
+
+# Python
+*.pyc
+__pycache__/
+
+# Django
+*.sqlite3
+*.log
+staticfiles/
+media/
+
+# IDE та редактори
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Системні файли
+.DS_Store
+Thumbs.db
