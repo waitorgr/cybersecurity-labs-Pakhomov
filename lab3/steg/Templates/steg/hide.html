@@ -1,0 +1,15 @@
+{% block content %}
+<a href="{% url 'steg:extract' %}">До витягування</a>
+<h2>Hide message in image</h2>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Hide</button>
+</form>
+{% if result %}
+  <h3>Result</h3>
+  <p>Saved file: <a href="{{ result.relative_path }}">Download</a></p>
+  <pre>{{ result.analysis }}</pre>
+{% endif %}
+
+
+{% endblock %}

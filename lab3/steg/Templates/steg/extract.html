@@ -1,0 +1,12 @@
+{% block content %}
+<a href="{% url 'steg:hide' %}">Назад до шифрування</a>
+<h2>Extract message from image</h2>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Extract</button>
+</form>
+{% if extracted %}
+  <h3>Extracted message</h3>
+  <pre>{{ extracted }}</pre>
+{% endif %}
+{% endblock %}
