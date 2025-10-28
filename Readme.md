@@ -13,7 +13,7 @@ Git (для клонування репозиторію)
 
 ⚡ Покрокова інструкція запуску з нуля
 1️⃣ Клонування репозиторію
-git clone https://github.com/ТВОЙ_USERNAME/Lab1.git
+https://github.com/waitorgr/cybersecurity-labs-Pakhomov.git
 cd Lab1
 
 2️⃣ Створення віртуального середовища
