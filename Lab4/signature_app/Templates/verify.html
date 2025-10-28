@@ -1,0 +1,12 @@
+<h1>Перевірка цифрового підпису</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Перевірити підпис</button>
+</form>
+
+{% if message %}
+    <h2>Результат: {{ message }}</h2>
+{% endif %}
+
+<a href="{% url 'index' %}">Назад</a>

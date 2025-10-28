@@ -1,0 +1,18 @@
+<h1>Результат підпису</h1>
+<p>Публічний ключ (n): {{ public_n }}</p>
+<p>Публічний експонент (e): {{ public_e }}</p>
+<p>Хеш документа (mod n): {{ file_hash }}</p>
+<p>Цифровий підпис: {{ signature }}</p>
+<p>Алгоритм хешування: {{ hash_algorithm }}</p>
+<p>Перевірка підпису (локально на сервері): {% if is_valid %}<b>ДІЙСНИЙ</b>{% else %}<b>ПІДРОБЛЕНИЙ</b>{% endif %}</p>
+
+<form method="get" action="{% url 'download_signed_document' %}">
+    <input type="hidden" name="document_path" value="{{ document_path }}">
+    <input type="hidden" name="signature" value="{{ signature }}">
+    <input type="hidden" name="hash_algorithm" value="{{ hash_algorithm }}">
+    <input type="hidden" name="public_n" value="{{ public_n }}">
+    <input type="hidden" name="public_e" value="{{ public_e }}">
+    <button type="submit">Завантажити підписаний документ</button>
+</form>
+
+<a href="{% url 'index' %}">Назад</a>
