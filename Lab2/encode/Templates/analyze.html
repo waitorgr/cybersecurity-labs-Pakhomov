@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <title>Аналіз шифру — Brute Force / Частотний аналіз</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        textarea { width: 100%; height: 120px; }
+        .panel { margin-top: 20px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; }
+        .bf-result { white-space: pre-wrap; font-family: monospace; }
+        .suggestion { margin-top: 8px; padding: 8px; background: #f7f7f7; border-radius: 4px; }
+        .xor-candidate { margin-bottom: 12px; padding: 8px; border: 1px dashed #ccc; border-radius: 4px; }
+        .btn { display: inline-block; padding: 6px 10px; border-radius: 4px; background:#007bff; color:#fff; text-decoration:none; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <a href="{% url 'cipher' %}">Назад до шифрування</a>
+    <h1>Аналіз шифру</h1>
+
+    <form method="post" id="analyze_form">
+        {% csrf_token %}
+        <label for="ciphertext">Зашифрований текст (можна hex):</label><br>
+        <textarea id="ciphertext" name="ciphertext" placeholder="Вставте текст...">{{ ciphertext }}</textarea><br>
+
+        <label>Режим аналізу:</label>
+        <select name="mode" id="mode" onchange="toggleSections()">
+            <option value="bruteforce" {% if mode == 'bruteforce' %}selected{% endif %}>Brute‑force (Caesar)</option>
+            <option value="xor_bruteforce" {% if mode == 'xor_bruteforce' %}selected{% endif %}>Brute‑force (XOR single‑byte)</option>
+            <option value="frequency" {% if mode == 'frequency' %}selected{% endif %}>Частотний аналіз</option>
+        </select>
+
+        <button type="submit">Аналізувати</button>
+    </form>
+
+    {% if error %}
+        <div class="panel" style="border-color: #e44;">{{ error }}</div>
+    {% endif %}
+
+    <!-- Caesar Brute-force -->
+    <div id="bruteforce_panel" class="panel" style="display:none;">
+        <h2>Brute-force — усі варіанти (зсув → текст)</h2>
+        {% if bruteforce_results %}
+            <div class="bf-result">
+            {% for r in bruteforce_results %}
+Shift {{ r.shift }}:
+{{ r.plaintext }}
+------------------------------------------------------------
+            {% endfor %}
+            </div>
+        {% else %}
+            <p>Натисніть "Аналізувати", щоб побачити всі зсуви.</p>
+        {% endif %}
+    </div>
+
+    <!-- XOR Brute-force -->
+    <div id="xor_panel" class="panel" style="display:none;">
+        <h2>XOR Brute-force (single-byte) — топ кандидатів</h2>
+
+        {% if xor_bruteforce_results %}
+            <div id="xor_candidates_list">
+                {% for c in xor_bruteforce_results %}
+                <div class="xor-candidate" data-idx="{{ forloop.counter0 }}">
+                    <strong>Key:</strong> {{ c.key }} &nbsp; <strong>Score:</strong> {{ c.score }}<br>
+                    <strong>Plaintext:</strong>
+                    <pre class="bf-result">{{ c.plaintext }}</pre>
+                    <button type="button" class="use-in-cipher" data-idx="{{ forloop.counter0 }}">Використати в шифруванні</button>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Передаємо candidates в JS як безпечний JSON -->
+            <script>
+                // Підготовка даних: JSON.parse з екранованого рядка
+                const xorCandidates = JSON.parse(`[
+                    {% for c in xor_bruteforce_results %}
+                    {
+                        "key": {{ c.key }},
+                        "plaintext": "{{ c.plaintext|escapejs }}",
+                        "score": {{ c.score }}
+                    }{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ]`);
+            </script>
+        {% else %}
+            <p>Натисніть "Аналізувати", щоб запустити XOR brute-force.</p>
+        {% endif %}
+    </div>
+
+    <!-- Frequency Analysis -->
+    <div id="frequency_panel" class="panel" style="display:none;">
+        <h2>Частотний аналіз</h2>
+        <canvas id="freqChart" width="800" height="300"></canvas>
+
+        {% if freq_data_json %}
+        <script>
+            const freqData = JSON.parse('{{ freq_data_json|escapejs }}');
+            const labels = freqData.labels;
+            const counts = freqData.counts;
+            const percent = freqData.percent;
+            const totalLetters = freqData.total_letters;
+
+            (function() {
+                // Створюємо/оновлюємо діаграму після завантаження
+                function renderChart() {
+                    const ctx = document.getElementById('freqChart').getContext('2d');
+                    if (window.freqChartInstance) {
+                        window.freqChartInstance.destroy();
+                    }
+                    window.freqChartInstance = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Кількість літер',
+                                data: counts
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: { display: true, text: 'Кількість' }
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Частота появи літер в тексті (всього ' + totalLetters + ' літер)'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        afterBody: function(context) {
+                                            const idx = context[0].dataIndex;
+                                            const p = percent[idx];
+                                            return 'Відсоток: ' + p + '%';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', renderChart);
+                } else {
+                    renderChart();
+                }
+            })();
+        </script>
+        {% else %}
+            <p>Натисніть "Аналізувати", щоб побачити графік частот.</p>
+        {% endif %}
+
+        {% if suggestions %}
+            <h3>Пропозиції зі зсувів</h3>
+            {% for s in suggestions %}
+            <div class="suggestion">
+Shift = {{ s.shift }} (мапінг: {{ s.mapped_from }} → {{ s.map_to }})<br>
+<strong>Результат:</strong><br>
+<div class="bf-result">{{ s.plaintext }}</div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Скрипт для керування видимістю панелей і кнопками "use-in-cipher" -->
+    <script>
+        function toggleSections() {
+            const mode = document.getElementById('mode').value;
+            document.getElementById('bruteforce_panel').style.display = mode === 'bruteforce' ? 'block' : 'none';
+            document.getElementById('xor_panel').style.display = mode === 'xor_bruteforce' ? 'block' : 'none';
+            document.getElementById('frequency_panel').style.display = mode === 'frequency' ? 'block' : 'none';
+        }
+
+        // Обробка кнопок "Використати в шифруванні" без inline onclick
+        function attachUseInCipherHandlers() {
+            const buttons = document.querySelectorAll('.use-in-cipher');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = Number(btn.dataset.idx);
+                    if (!Array.isArray(window.xorCandidates) || !Number.isInteger(idx) || idx < 0 || idx >= xorCandidates.length) {
+                        console.warn('Invalid candidate index or xorCandidates not available', idx);
+                        return;
+                    }
+                    const pt = xorCandidates[idx].plaintext;
+                    const url = "{% url 'cipher' %}" + "?text=" + encodeURIComponent(pt);
+                    window.location.href = url;
+                });
+            });
+        }
+
+        // Ініціалізація при завантаженні
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleSections();
+            attachUseInCipherHandlers();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Шифрування тексту</title>
+</head>
+<body>
+    <a href="{% url 'cipher_analyze' %}">Перейти до аналізу</a>
+    <h1>Шифрування тексту</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="text">Текст:</label><br>
+        <textarea name="text" id="text" placeholder="Введіть текст">{{ text }}</textarea><br><br>
+
+        <label for="dob">Дата народження (для генерації ключа):</label><br>
+        <input type="text" name="dob" id="dob" value="{{ dob }}" placeholder="1990-05-12"><br><br>
+
+        <label>Тип шифру:</label>
+        <select name="cipher_type">
+            <option value="caesar" {% if cipher_type == 'caesar' %}selected{% endif %}>Caesar</option>
+            <option value="xor" {% if cipher_type == 'xor' %}selected{% endif %}>XOR</option>
+        </select><br><br>
+
+        <button type="submit" name="action" value="encrypt">Зашифрувати</button>
+        <button type="submit" name="action" value="decrypt">Розшифрувати</button>
+    </form>
+
+    {% if result %}
+        <h3>Результат:</h3>
+        <p>{{ result }}</p>
+    {% endif %}
+</body>
+</html>
