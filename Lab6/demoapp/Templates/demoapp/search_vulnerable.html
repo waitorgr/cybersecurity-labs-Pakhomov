@@ -1,0 +1,22 @@
+{% extends "demoapp/base.html" %}
+{% block content %}
+<div class="box danger">
+  <h2>Vulnerable Search (INTENTIONALLY VULNERABLE)</h2>
+  <form method="get">
+    <label>Search name: <input type="text" name="q" value="{{ query|default:'' }}" size="40"/></label>
+    <button type="submit">Search</button>
+  </form>
+  <p><strong>Note:</strong> this view concatenates user input into raw SQL — vulnerable to SQLi.</p>
+  {% if error %}
+    <div style="color:darkred;"><strong>SQL/Error:</strong> {{ error }}</div>
+  {% endif %}
+  <h3>Results ({{ results|length }})</h3>
+  <ul>
+  {% for r in results %}
+    <li><strong>{{ r.name }}</strong> — {{ r.email }} — secret: <em>{{ r.secret_info }}</em></li>
+  {% empty %}
+    <li>No results</li>
+  {% endfor %}
+  </ul>
+</div>
+{% endblock %}

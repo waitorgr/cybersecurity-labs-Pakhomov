@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SQLi Demo</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin: 24px; }
+    .container { max-width: 900px; margin: auto; }
+    .box { padding: 12px; border: 1px solid #ddd; border-radius:6px; margin-bottom:12px; background:#fafafa; }
+    .danger { background:#fff0f0; border-color:#f5c2c2; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SQL Injection Demo (Django)</h1>
+    <nav>
+      <a href="{% url 'demoapp:index' %}">Home</a> |
+      <a href="{% url 'demoapp:search_vulnerable' %}">Search (Vulnerable)</a> |
+      <a href="{% url 'demoapp:search_safe' %}">Search (Safe)</a>
+    </nav>
+    <hr/>
+    {% block content %}{% endblock %}
+    <hr/>
+    <footer><small>Demo — only for learning. Never repeat this in production.</small></footer>
+  </div>
+</body>
+</html>

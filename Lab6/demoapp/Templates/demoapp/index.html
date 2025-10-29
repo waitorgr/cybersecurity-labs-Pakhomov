@@ -1,0 +1,18 @@
+{% extends "demoapp/base.html" %}
+{% block content %}
+<div class="box">
+  <h2>Instructions</h2>
+  <p>Use the search pages. Try payloads in the vulnerable page and compare with the safe page.</p>
+  <ul>
+    <li>Go to <a href="{% url 'demoapp:search_vulnerable' %}">Vulnerable search</a></li>
+    <li>Try basic payloads like <code>John</code> or malicious ones shown below</li>
+  </ul>
+  <h3>Suggested payloads</h3>
+  <ul>
+    <li><code>John</code> — normal search</li>
+    <li><code>%</code> — wildcard returns all rows</li>
+    <li><code>' OR '1'='1</code> — classic SQL injection payload (for vulnerable input)</li>
+    <li><code>%' OR '1'='1</code> — to exploit LIKE with injected OR</li>
+  </ul>
+</div>
+{% endblock %}
