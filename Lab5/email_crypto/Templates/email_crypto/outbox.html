@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<body>
+<h1>Повідомлення</h1>
+<ul>
+  {% for m in messages %}
+    <li>
+      <strong>From:</strong> {{ m.sender_email }} |
+      <strong>To:</strong> {{ m.recipient_email }} |
+      <strong>At:</strong> {{ m.created_at }} |
+      <a href="{% url 'email_crypto:detail' m.pk %}">Деталі</a>
+    </li>
+  {% empty %}
+    <li>Порожньо</li>
+  {% endfor %}
+</ul>
+<p><a href="{% url 'email_crypto:compose' %}">Новий лист</a></p>
+</body>
+</html>

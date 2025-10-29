@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+<head><title>Compose</title></head>
+<body>
+<h1>Створити зашифрований лист</h1>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Зашифрувати і відправити (записати)</button>
+</form>
+<p><a href="{% url 'email_crypto:outbox' %}">Список повідомлень</a></p>
+</body>
+</html>

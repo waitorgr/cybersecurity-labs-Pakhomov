@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+<body>
+<h1>Завантажити вкладення</h1>
+{% if error %}<p style="color:red">{{ error }}</p>{% endif %}
+<form method="post">{% csrf_token %}
+  <label>Recipient email: <input name="recipient_email" value="{{ message.recipient_email }}"></label><br>
+  <label>Персональний рядок: <input name="personal_string" type="password"></label><br>
+  <button type="submit">Отримати файл</button>
+</form>
+</body>
+</html>
