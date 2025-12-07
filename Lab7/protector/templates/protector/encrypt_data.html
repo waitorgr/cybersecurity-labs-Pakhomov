@@ -1,0 +1,16 @@
+<h2>Перехідні дані для дешифрування</h2>
+<p>Файл: {{ original_name }}</p>
+<p>Розмір оригіналу: {{ size_original }} байт</p>
+
+<h3>Контейнер з прихованим шифром</h3>
+{% if container_url %}
+    <a href="{{ container_url }}" target="_blank">Переглянути / завантажити контейнер</a>
+{% else %}
+    <p>Контейнер відсутній</p>
+{% endif %}
+
+<p><a href="{% url 'protector:decrypt_data' %}">Перейти до дешифрування</a></p>
+
+<p><a href="{% url 'protector:status' pk=rec.id %}">Статистика</a></p>
+
+

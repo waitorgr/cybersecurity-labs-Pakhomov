@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Статус файлу</title>
+</head>
+<body>
+  <h1>Статус файлу: {{ rec.original_name }}</h1>
+  <ul>
+    <li>Розмір оригіналу: {{ rec.size_original }} байт</li>
+    <li>Розмір шифру: {{ rec.size_cipher }} байт</li>
+    <li>Розмір контейнера: {{ rec.size_container }} байт</li>
+    <li>Час підпису: {{ rec.time_sign_ms }} мс</li>
+    <li>Час шифрування: {{ rec.time_encrypt_ms }} мс</li>
+    <li>Час стеганографії: {{ rec.time_stego_ms }} мс</li>
+    <li>Підпис валідний: {{ rec.signature_valid }}</li>
+    <li>Відновлення успішне: {{ rec.success_restore }}</li>
+  </ul>
+
+  {% if rec.container_image %}
+    <p>Контейнер:</p>
+    <img src="{{ rec.container_image.url }}" alt="Container image" width="300">
+  {% endif %}
+</body>
+</html>

@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Завантаження файлу</title></head>
+<body>
+  <h1>Завантажити файл для двоетапного захисту</h1>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Захистити</button>
+  </form>
+</body>
+</html>

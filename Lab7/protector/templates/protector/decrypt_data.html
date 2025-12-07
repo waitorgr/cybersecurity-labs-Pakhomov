@@ -1,0 +1,26 @@
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Контейнер (PNG) з прихованим шифром:</label><br>
+    <input type="file" name="container_file" accept="image/*"><br><br>
+
+    <label>Пароль:</label><br>
+    <input type="password" name="password"><br><br>
+
+    <button type="submit">Розшифрувати</button>
+
+    {% if decrypted_text %}
+    <h3>Розшифрований текст:</h3>
+    <pre>{{ decrypted_text }}</pre>
+{% endif %}
+
+{% if signature_valid is not none %}
+    <p>Підпис: 
+        {% if signature_valid %}
+            <strong>валідний ✅</strong>
+        {% else %}
+            <strong>невалідний ❌</strong>
+        {% endif %}
+    </p>
+{% endif %}
+
+</form>
